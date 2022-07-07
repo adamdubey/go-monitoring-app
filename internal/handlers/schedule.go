@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/tsawler/vigilate/internal/helpers"
+	"github.com/adamdubey/go-monitoring-app/internal/helpers"
 	"net/http"
 )
 

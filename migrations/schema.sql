@@ -44,13 +44,13 @@ CREATE TABLE public.host_services (
     id integer NOT NULL,
     host_id integer NOT NULL,
     service_id integer NOT NULL,
-    active character varying(255) DEFAULT '1'::character varying NOT NULL,
-    icon character varying(255) NOT NULL,
+    active integer DEFAULT 1 NOT NULL,
     schedule_number integer DEFAULT 3 NOT NULL,
     schedule_unit character varying(255) DEFAULT 'm'::character varying NOT NULL,
     last_check timestamp without time zone DEFAULT '0001-01-01 00:00:01'::timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    status character varying(255) DEFAULT 'pending'::character varying NOT NULL
 );
 
 
@@ -91,7 +91,7 @@ CREATE TABLE public.hosts (
     ipv6 character varying(255) NOT NULL,
     location character varying(255) NOT NULL,
     os character varying(255) NOT NULL,
-    active character varying(255) DEFAULT '1'::character varying NOT NULL,
+    active integer DEFAULT 1 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -213,7 +213,7 @@ ALTER TABLE public.schema_migration OWNER TO adam;
 CREATE TABLE public.services (
     id integer NOT NULL,
     service_name character varying(255) NOT NULL,
-    active character varying(255) DEFAULT '1'::character varying NOT NULL,
+    active integer DEFAULT 1 NOT NULL,
     icon character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL

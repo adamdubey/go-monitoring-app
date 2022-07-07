@@ -2,24 +2,25 @@ package handlers
 
 import (
 	"github.com/pusher/pusher-http-go"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-func (repo *DBRepo) PusherAuth(w http.ResponseWriter, r *http.Request)  {
+// PusherAuth authenticates the user to our pusher server
+func (repo *DBRepo) PusherAuth(w http.ResponseWriter, r *http.Request) {
 	userID := repo.App.Session.GetInt(r.Context(), "userID")
 
 	u, _ := repo.DB.GetUserById(userID)
 
-	params, _ := ioutil.ReadAll(r.Body)
+	params, _ := io.ReadAll(r.Body)
 
 	presenceData := pusher.MemberData{
 		UserID: strconv.Itoa(userID),
-		UserInfo: map[string]string {
+		UserInfo: map[string]string{
 			"name": u.FirstName,
-			"id": strconv.Itoa(userID),
+			"id":   strconv.Itoa(userID),
 		},
 	}
 
@@ -33,10 +34,12 @@ func (repo *DBRepo) PusherAuth(w http.ResponseWriter, r *http.Request)  {
 	_, _ = w.Write(response)
 }
 
-func (repo *DBRepo) TestPusher(w http.ResponseWriter, r *http.Request)  {
+// TestPusher just tests pusher - delete this before going into production
+func (repo *DBRepo) TestPusher(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]string)
-	data["message"] = "Hack The Planet!"
-	err := repo.App.WsClient.Trigger("public-channel", "pusher-test-event", data)
+	data["message"] = "Hello, world"
+
+	err := repo.App.WsClient.Trigger("public-channel", "test-event", data)
 	if err != nil {
 		log.Println(err)
 	}

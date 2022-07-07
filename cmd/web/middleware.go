@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/justinas/nosurf"
-	"github.com/tsawler/vigilate/internal/helpers"
+	"github.com/adamdubey/go-monitoring-app/internal/helpers"
 	"net/http"
 	"strconv"
 	"strings"

@@ -4,8 +4,8 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
 	"github.com/robfig/cron/v3"
-	"github.com/tsawler/vigilate/internal/channeldata"
-	"github.com/tsawler/vigilate/internal/driver"
+	"github.com/adamdubey/go-monitoring-app/internal/channeldata"
+	"github.com/adamdubey/go-monitoring-app/internal/driver"
 	"html/template"
 )
 

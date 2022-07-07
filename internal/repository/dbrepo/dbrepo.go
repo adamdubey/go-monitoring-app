@@ -2,8 +2,8 @@ package dbrepo
 
 import (
 	"database/sql"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/repository"
+	"github.com/adamdubey/go-monitoring-app/internal/config"
+	"github.com/adamdubey/go-monitoring-app/internal/repository"
 )
 
 var app *config.AppConfig

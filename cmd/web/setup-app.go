@@ -6,11 +6,12 @@ import (
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/pusher/pusher-http-go"
-	"github.com/tsawler/vigilate/internal/channeldata"
-	"github.com/tsawler/vigilate/internal/config"
-	"github.com/tsawler/vigilate/internal/driver"
-	"github.com/tsawler/vigilate/internal/handlers"
-	"github.com/tsawler/vigilate/internal/helpers"
+	"github.com/robfig/cron/v3"
+	"github.com/adamdubey/go-monitoring-app/internal/channeldata"
+	"github.com/adamdubey/go-monitoring-app/internal/config"
+	"github.com/adamdubey/go-monitoring-app/internal/driver"
+	"github.com/adamdubey/go-monitoring-app/internal/handlers"
+	"github.com/adamdubey/go-monitoring-app/internal/helpers"
 	"log"
 	"net/http"
 	"os"
@@ -137,6 +138,14 @@ func setupApp() (*string, error) {
 	log.Println("Secure", *pusherSecure)
 
 	app.WsClient = wsClient
+
+	localZone, _ := time.LoadLocation("Local")
+	scheduler := cron.New(cron.WithLocation(localZone), cron.WithChain(
+		cron.DelayIfStillRunning(cron.DefaultLogger),
+		cron.Recover(cron.DefaultLogger),
+	))
+
+	app.Scheduler = scheduler
 
 	helpers.NewHelpers(&app)
 
