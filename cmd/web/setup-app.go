@@ -137,7 +137,7 @@ func setupApp() (*string, error) {
 	log.Println("Host", fmt.Sprintf("%s:%s", *pusherHost, *pusherPort))
 	log.Println("Secure", *pusherSecure)
 
-	app.WsClient = wsClient
+	app.WsClient = &wsClient
 	monitorMap := make(map[int]cron.EntryID)
 	app.MonitorMap = monitorMap
 
@@ -150,6 +150,10 @@ func setupApp() (*string, error) {
 	app.Scheduler = scheduler
 
 	go handlers.Repo.StartMonitoring()
+
+	if app.PreferenceMap["monitoring_live"] == "1" {
+		app.Scheduler.Start()
+	}
 
 	helpers.NewHelpers(&app)
 

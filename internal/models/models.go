@@ -2,6 +2,9 @@ package models
 
 import (
 	"errors"
+	"github.com/pusher/pusher-http-go"
+	"github.com/robfig/cron/v3"
+	"net/http"
 	"time"
 )
 
@@ -76,8 +79,49 @@ type HostService struct {
 	ScheduleUnit   string
 	Status         string
 	LastCheck      time.Time
+	LastMessage    string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Service        Services
 	HostName       string
+}
+
+// Schedule model
+type Schedule struct {
+	ID            int
+	EntryID       cron.EntryID
+	Entry         cron.Entry
+	Host          string
+	Service       string
+	LastRunFromHS time.Time
+	HostServiceID int
+	ScheduleText  string
+}
+
+// Event model
+type Event struct {
+	ID            int
+	EventType     string
+	HostServiceID int
+	HostID        int
+	ServiceName   string
+	HostName      string
+	Message       string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+// WSClient is a wrapper for pusher.Client
+type WSClient interface {
+	Trigger(channel string, eventName string, data interface{}) error
+	TriggerMulti(channels []string, eventName string, data interface{}) error
+	TriggerExclusive(channel string, eventName string, data interface{}, socketID string) error
+	TriggerMultiExclusive(channels []string, eventName string, data interface{}, socketID string) error
+	TriggerBatch(batch []pusher.Event) error
+	Channels(additionalQueries map[string]string) (*pusher.ChannelsList, error)
+	Channel(name string, additionalQueries map[string]string) (*pusher.Channel, error)
+	GetChannelUsers(name string) (*pusher.Users, error)
+	AuthenticatePrivateChannel(params []byte) (response []byte, err error)
+	AuthenticatePresenceChannel(params []byte, member pusher.MemberData) (response []byte, err error)
+	Webhook(header http.Header, body []byte) (*pusher.Webhook, error)
 }

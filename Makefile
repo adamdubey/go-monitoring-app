@@ -15,18 +15,12 @@ down:
 	docker-compose down
 	@echo "Done!"
 
-ipe_service_stop:
-	@echo "Starting IPE service..."
-	cd ipe
-	@-pkill -SIGTERM -f ./ipe
-	@echo "IPE service stopped!"
+test:
+	@echo "Executing Tests..."
+	cd internal/handlers && go test -v . &
+	@echo "Testing Complete!"
 
-ipe_service_start:
-	@echo "Stopping IPE service..."
-	cd ipe && ./ipe &
-	@echo "IPE service started!"
-
-start: up ipe build_front
+start: up build_front
 	@echo "Starting Docker container services"
 	@echo "Starting IPE service
 	@echo "Starting front end"
@@ -40,7 +34,7 @@ start: up ipe build_front
 		-pusherPort="4001" \
 		-pusherSecure=false &
 
-stop: down ipe_service_stop
+stop: down
 	@echo "Stopping front end & services..."
 	@-pkill -SIGTERM -f "./${FRONT_END_BINARY}"
 	@echo "Stopped front end!"

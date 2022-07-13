@@ -70,7 +70,16 @@ func (repo *DBRepo) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 
 // Events displays the events page
 func (repo *DBRepo) Events(w http.ResponseWriter, r *http.Request) {
-	err := helpers.RenderPage(w, r, "events", nil, nil)
+	events, err := repo.DB.GetAllEvents()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	data := make(jet.VarMap)
+	data.Set("events", events)
+
+	err = helpers.RenderPage(w, r, "events", data, nil)
 	if err != nil {
 		printTemplateError(w, err)
 	}
@@ -386,12 +395,25 @@ func (repo *DBRepo) ToggleServiceForHost(w http.ResponseWriter, r *http.Request)
 		resp.OK = false
 	}
 
+	// broadcast
+	hs, _ := repo.DB.GetHostServiceByHostIDServiceID(hostID, serviceID)
+	h, _ := repo.DB.GetHostByID(hostID)
+
+	// add or remove from schedule
+	if active == 1 {
+		repo.pushScheduleChangedEvent(hs, "pending")
+		repo.pushStatusChangedEvent(h, hs, "pending")
+		repo.addToMonitorMap(hs)
+	} else {
+		repo.removeFromMonitorMap(hs)
+	}
+
 	out, _ := json.MarshalIndent(resp, "", "    ")
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
 }
 
-// SetSystemPref sets a system preference and returns JSON message
+// SetSystemPref sets a given system preference to supplied value, and returns JSON response
 func (repo *DBRepo) SetSystemPref(w http.ResponseWriter, r *http.Request) {
 	prefName := r.PostForm.Get("pref_name")
 	prefValue := r.PostForm.Get("pref_value")
@@ -409,45 +431,56 @@ func (repo *DBRepo) SetSystemPref(w http.ResponseWriter, r *http.Request) {
 	repo.App.PreferenceMap["monitoring_live"] = prefValue
 
 	out, _ := json.MarshalIndent(resp, "", "   ")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
+
 }
 
-// ToggleMonitoring turns monitoring on/off
-func (repo *DBRepo) ToggleMonitoring(w http.ResponseWriter, r *http.Request)  {
+// ToggleMonitoring turns monitoring on and off
+func (repo *DBRepo) ToggleMonitoring(w http.ResponseWriter, r *http.Request) {
 	enabled := r.PostForm.Get("enabled")
 
 	if enabled == "1" {
 		// start monitoring
-		log.Println("Turning on monitoring!")
+		repo.App.PreferenceMap["monitoring_live"] = "1"
 		repo.StartMonitoring()
 		repo.App.Scheduler.Start()
 	} else {
 		// stop monitoring
-		log.Println("Turning off monitoring...")
+		repo.App.PreferenceMap["monitoring_live"] = "0"
 
-		// rm all items in schedule map
+		// remove all items in map from schedule
 		for _, x := range repo.App.MonitorMap {
 			repo.App.Scheduler.Remove(x)
 		}
 
-		// empty map
+		// empty the map
 		for k := range repo.App.MonitorMap {
 			delete(repo.App.MonitorMap, k)
 		}
 
-		// rm all entries from schedule
+		// delete all entries from schedule, to be sure
 		for _, i := range repo.App.Scheduler.Entries() {
 			repo.App.Scheduler.Remove(i.ID)
 		}
 
 		repo.App.Scheduler.Stop()
+
+		data := make(map[string]string)
+		data["message"] = "Monitoring is off!"
+		err := app.WsClient.Trigger("public-channel", "app-stopping", data)
+		if err != nil {
+			log.Println(err)
+		}
+
 	}
 
 	var resp jsonResp
 	resp.OK = true
-	
+
 	out, _ := json.MarshalIndent(resp, "", "   ")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
 }

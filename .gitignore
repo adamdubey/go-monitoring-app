@@ -19,6 +19,9 @@ go.work
 # Project specific
 db-data/
 ipe/
-.terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
 database.yml
-vigilate
+*vigilate

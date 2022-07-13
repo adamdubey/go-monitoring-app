@@ -188,7 +188,7 @@ Host
                     <div class="row">
                         <div class="col">
                             <h4 class="pt-3">Healthy Services</h4>
-                            <table class="table table-striped">
+                            <table id="healthy-table" class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>Service</th>
@@ -198,8 +198,8 @@ Host
                                 </thead>
                                 <tbody>
                                 {{range host.HostServices}}
-                                {{if .Status == "healthy"}}
-                                <tr>
+                                {{if .Status == "healthy" && .Active == 1}}
+                                <tr id="host-service-{{.ID}}">
                                     <td>
                                         <span class="{{.Service.Icon}}"></span>
                                         {{.Service.ServiceName}}
@@ -214,7 +214,9 @@ Host
                                             Pending...
                                         {{end}}
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        {{.LastMessage}}
+                                    </td>
                                 </tr>
                                 {{end}}
                                 {{end}}
@@ -229,7 +231,7 @@ Host
                     <div class="row">
                         <div class="col">
                             <h4 class="pt-3">Warning Services</h4>
-                            <table class="table table-striped">
+                            <table id="warning-table" class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>Service</th>
@@ -239,8 +241,8 @@ Host
                                 </thead>
                                 <tbody>
                                 {{range host.HostServices}}
-                                {{if .Status == "warning"}}
-                                <tr>
+                                {{if .Status == "warning" && .Active == 1}}
+                                <tr id="host-service-{{.ID}}">
                                     <td>
                                         <span class="{{.Service.Icon}}"></span>
                                         {{.Service.ServiceName}}
@@ -270,7 +272,7 @@ Host
                     <div class="row">
                         <div class="col">
                             <h4 class="pt-3">Problem Services</h4>
-                            <table class="table table-striped">
+                            <table id="problem-table" class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>Service</th>
@@ -280,8 +282,8 @@ Host
                                 </thead>
                                 <tbody>
                                 {{range host.HostServices}}
-                                    {{if .Status == "problem"}}
-                                    <tr>
+                                    {{if .Status == "problem" && .Active == 1}}
+                                    <tr id="host-service-{{.ID}}">
                                         <td>
                                             <span class="{{.Service.Icon}}"></span>
                                             {{.Service.ServiceName}}
@@ -312,7 +314,7 @@ Host
                     <div class="row">
                         <div class="col">
                             <h4 class="pt-3">Pending Services</h4>
-                            <table class="table table-striped">
+                            <table id="pending-table" class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th>Service</th>
@@ -322,8 +324,8 @@ Host
                                 </thead>
                                 <tbody>
                                 {{range host.HostServices}}
-                                    {{if .Status == "pending"}}
-                                    <tr>
+                                    {{if .Status == "pending" && .Active == 1}}
+                                    <tr id="host-service-{{.ID}}">
                                         <td>
                                             <span class="{{.Service.Icon}}"></span>
                                             {{.Service.ServiceName}}
@@ -338,7 +340,9 @@ Host
                                                 Pending...
                                             {{end}}
                                         </td>
-                                        <td></td>
+                                        <td>
+                                            {{.LastMessage}}
+                                        </td>
                                     </tr>
                                     {{end}}
                                 {{end}}

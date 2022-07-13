@@ -37,6 +37,47 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: events; Type: TABLE; Schema: public; Owner: adam
+--
+
+CREATE TABLE public.events (
+    id integer NOT NULL,
+    event_type character varying(255) NOT NULL,
+    host_service_id integer NOT NULL,
+    host_id integer NOT NULL,
+    service_name character varying(255) NOT NULL,
+    host_name character varying(255) NOT NULL,
+    message character varying(512) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.events OWNER TO adam;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: adam
+--
+
+CREATE SEQUENCE public.events_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.events_id_seq OWNER TO adam;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: adam
+--
+
+ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
+
+
+--
 -- Name: host_services; Type: TABLE; Schema: public; Owner: adam
 --
 
@@ -50,7 +91,8 @@ CREATE TABLE public.host_services (
     last_check timestamp without time zone DEFAULT '0001-01-01 00:00:01'::timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    status character varying(255) DEFAULT 'pending'::character varying NOT NULL
+    status character varying(255) DEFAULT 'pending'::character varying NOT NULL,
+    last_message character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -300,6 +342,13 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: adam
+--
+
+ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
 -- Name: host_services id; Type: DEFAULT; Schema: public; Owner: adam
 --
 
@@ -339,6 +388,14 @@ ALTER TABLE ONLY public.services ALTER COLUMN id SET DEFAULT nextval('public.ser
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: adam
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
 
 
 --
@@ -409,6 +466,13 @@ CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USIN
 --
 
 CREATE INDEX sessions_expiry_idx ON public.sessions USING btree (expiry);
+
+
+--
+-- Name: events set_timestamp; Type: TRIGGER; Schema: public; Owner: adam
+--
+
+CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.events FOR EACH ROW EXECUTE FUNCTION public.trigger_set_timestamp();
 
 
 --
