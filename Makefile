@@ -22,7 +22,6 @@ test:
 
 start: up build_front
 	@echo "Starting Docker container services"
-	@echo "Starting IPE service
 	@echo "Starting front end"
 	./${FRONT_END_BINARY} \
 		-dbuser='adam' \

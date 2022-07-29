@@ -2,8 +2,6 @@
 
 ## Quick Start
 
-- A [Pusher](https://pusher.com/) account, or alternative solution such as [ipê](https://github.com/dimiro1/ipe) is required. _See [QRH](##QRH) for additional details._
-
 _via `run.sh`:_
 ```sh
 # start docker container services
@@ -72,5 +70,4 @@ docker-compose up -d
 - [PostgreSQL](https://www.postgresql.org/)
 - [Pusher](https://github.com/pusher/pusher-http-go)
 - [Soda](https://gobuffalo.io/documentation/database/fizz/)
-- [Terraform](https://www.terraform.io/)
 - [Twilio](https://www.twilio.com/)

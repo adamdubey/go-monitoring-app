@@ -20,13 +20,13 @@ var session *scs.SessionManager
 var preferenceMap map[string]string
 var wsClient pusher.Client
 
-const vigilateVersion = "1.0.0"
+const vigilateVersion = "3.0.0"
 const maxWorkerPoolSize = 5
 const maxJobMaxWorkers = 5
 
 func init() {
 	gob.Register(models.User{})
-	_ = os.Setenv("TZ", "America/Halifax")
+	_ = os.Setenv("TZ", "America/Detroit")
 }
 
 // main is the application entry point
